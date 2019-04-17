@@ -1,0 +1,1 @@
+/Users/mbodd/Desktop/RustProjects/RustTuts/trait_example/target/debug/libtrait_example.rmeta: /Users/mbodd/Desktop/RustProjects/RustTuts/trait_example/src/lib.rs /Users/mbodd/Desktop/RustProjects/RustTuts/trait_example/src/main.rs
