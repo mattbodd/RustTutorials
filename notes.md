@@ -1594,4 +1594,80 @@ fn main() {
 }
 ```
 
-a
+#### Processing a Series of Items with Iterators
+An iterator allows for tasks to be performed on a sequence of items in turn.  An iterator handles all of the logic responsible for iterating over each item and determining when the sequence has terminated.
+
+In Rust, iterators are _lazy_ meaning they have no effect until methods are called which consume the iterator to use it up.  An iterator can be applied to a variety of collections.  For example, to create an iterator for a vector:
+```
+let v1 = vec![1, 2, 3];
+let v1_iter = v1.iter();
+```
+
+Once an iterator has been created, it can be used in a variety of ways.  One common way is to use a `for` loop to iterate over all of the elements within it.
+
+##### The `Iterator` Trait and the `next` Method
+All iterators implement a trait named `Iterator` that is defined in the standard library.  The definition looks like:
+```
+pub trait Iterator {
+	type Item;
+	
+	fn next(&mut self) -> Option<Self::item>;	
+	...
+}
+```
+
+Notice that the above definition uses new syntax: `type Item` and `Self::Item` which are used to define an `associated type` with this trait.  At a high level, this code requires that the `Iterator` trait define an `Item` type which is used in the return type of the `next` method.  In other words, the `Item` type will be the type returned from the iterator.
+
+The `Iterator` trait only requires implementors to define one method: the `next` method which returns one item of the iterator at a time wrapped in `Some` and, when iteration is over, returns `None`.
+
+The `next` method can be called on iterators directly.
+
+An `iter` needs to be mutable as calling the `next` method on an iterator changes internal state that the iterator uses to keep track of where it is in the sequence.  In other words, `next` will _consume_ the iterator.  Also note that the values returned from `next` are immutable references of the values in the collection being iterated over.  In order to create an iterator which takes ownership and returns owned values, use `into_iter` instead of `iter`.  Similarly, if it is desirable to iterator over mutable references, call into `iter_mut` instead of `iter`.
+
+##### Methods that Consume the Iterator
+The `Iterator` trait has a number of different methods with default implementations provided by the standard library.  Some of these methods call `next` which is why it is required to implement the `next` method when implementing the `Iterator` trait.
+
+Methods which call `next` are called _consuming adapters_ because calling them uses up the iterator.
+
+##### Methods that Produce Other Iterators
+Other methods defined on the `Iterator` trait, known as _iterator adapters_ allow for chances to iterators to convert to different kinds of iterators.  Multiple calls to iterators can be chained to perform complex actions in more readable ways.  Keep in mind that as iterators are lazy by nature, one of the consuming adapters has to be called to get results from calls to iterator adapters.  For example:
+```
+let v1: vec![1, 2, 3];
+v1.iter().map(|x| x + 1);
+```
+
+The above code will not actually perform the mapping as the `iter` must be called first.  To fix this issue, `collect` can be used to invoke the `iter` function.
+
+##### Using Closures that Capture Their Environment
+There is a common use of closures that involves capturing their environment using the `filter` iterator adapter.  The `filter` iterator takes a closure that takes each item from the iterator and returns a Boolean.  If the closure returns `true`, the value will be included in the iterator produced by `filter`.  If the closure returns `false`, the value won't be included in the resulting iterator.
+
+##### Creating Our Own Iterators with the `Iterator` Trait
+As stated previously, in order to extend the iterator interface to a custom type, simply implement the `next` method.  Take for example this `struct`:
+```
+struct Counter {
+	count: u32,
+}
+
+impl Counter {
+	fn new() -> Counter {
+		Counter { count : 0}
+	}
+}
+```
+
+This defines Counter to start with an attribute, count = 0.  Now say that we want to create an iterator which will iterate until the value of Counter.count is 5.  This can be achieved with:
+```
+impl Iterator for Counter {
+	type Item = u32;
+	
+	fn next(&mut self) -> Option<Self::Item> {
+		self.count += 1;
+		
+		if self.count < 6 {
+			Some(self.count)
+		} else {
+			None
+		}
+	}
+}
+```
