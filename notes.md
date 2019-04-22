@@ -1948,4 +1948,6 @@ You can only make _object-safe_ traits into trait objects.  Some complex rules g
 * The return type **isn't** self
 * There are no generic type parameters
 
-The `self` keyword is an alias for the type we're implementing the traits or methods on.
+The `self` keyword is an alias for the type we're implementing the traits or methods on.  Trait objects must be object safe because once they've been used, Rust no longer knows the concrete type that's implementing that trait.  If a trait method returns a concrete `self` type, but a trait object forgets the exact type that `self` is, there is no way the method can use the original concrete type.  The same is true for generic type parameters that are filled with concrete type parameters when the trait is used: the concrete types become part of the type that implements the trait.  When the type is forgotten through the use of a trait object, there is no way to know what types to fill in the generic type parameters with.
+
+#### Implementing an Object-Oriented Design Pattern
