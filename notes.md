@@ -30,12 +30,12 @@ An integer is a number without a fractional component.  The integer types in Rus
 |128-bit | `i128` |  `u128`  |
 |  arch  | `isize`|  `usize` |
 
-Signed numbers are stored using two's complement representation.  Each signed variant can store numbers from **-(2^(n-1))** to **2^(n-1)**  where *n* is the number of bits that a variant uses.  In Rust, all number literals except the byte literal allow a visual seperator such as `1_000`
+Signed numbers are stored using two's complement representation.  Each signed variant can store numbers from **-(2^(n-1))** to **2^(n-1)**  where *n* is the number of bits that a variant uses.  In Rust, all number literals except the byte literal allow a visual separator such as `1_000`
 Rust is able to handle overflow in production and will perform two's complement wrapping to mod the number by its corresponding intended size.  In development, this wrapping will not occur and signal an error instead.
 
-Rust also has two primatives for floating points as well.  Rust supports `f32` and `f64` where the default is `f64` as on most CPU's there is not much difference speed wise between the two types of floats.
+Rust also has two primitives for floating points as well.  Rust supports `f32` and `f64` where the default is `f64` as on most CPU's there is not much difference speed wise between the two types of floats.
 
-The character primative in Rust also supports more than just ASCII.  You can represent accented letters, Chinese, Japanese and Korean characters, emojis and zero-width spaces.
+The character primitive in Rust also supports more than just ASCII.  You can represent accented letters, Chinese, Japanese and Korean characters, emojis and zero-width spaces.
 
 ##### Compound Types
 *Compound Types* can group multiple values into one type.  Rust has two primative compount types: **tuples** and **arrays**.
@@ -1671,3 +1671,281 @@ impl Iterator for Counter {
 	}
 }
 ```
+
+Iterators in Rust are an example of what is known as a _zero cost abstraction_ which means runtime performance is not lost in abstraction.
+
+Nice quote: "In general, C++ implementations obey the zero-overhead principle: What you don’t use, you don’t pay for. And further: What you do use, you couldn’t hand code any better."
+
+### Chapter 14
+#### Customizing Builds with Release Profiles
+Release profiles allow for programmers to specify different variations of compiling the same project.  Each profile is configured independently of others.  Cargo has two main build profiles: `dev` and `release`.  `dev` is triggered with: `cargo build` while `release` is triggered with `cargo build --release`.  It is also possible to specify custom profiles by simply inserting `[profile.*]`.  By default, **Cargo.toml** will include:
+```
+[profile.dev]
+opt-level = 0
+[profile.release]
+opt-level = 3
+```
+
+#### Publishing a Crate to Crates.io
+Crates.io will store source code which can be distributed.
+##### Making Useful Documentation Comments
+Using /// instead of just // will signify a documentation comment which can automatically be used automatically when creating generating HTML documentation.  These documentation comments also support Markdown.  This documentation can be generated using `cargo doc` which will implicitly use `rustdoc` and place the resulting HTML into **target/doc**.
+
+### Chapter 15
+#### Smart Pointers
+A pointer is a general concept for a variable that contains an address in memory.  Pointers were first introduced with references which are indicated by the `&` symbol and borrow the value that they point to.  References do not have any overhead.
+
+A smart pointer will act like a normal pointer but contains the ability to store metadata.  One example of a smart pointer is a reference counter which keeps track of the number of owners.  Using a reference pointer allows for multiple owners of single data.  After all owners have been cleaned up, it is possible to cleaup the smart pointer itself.
+
+Another important difference between references (a type of pointer) and other types of smart pointers is that references only borrow data while many smart pointers allow for owning of data.
+
+Two basic types of smart pointers are `String` and `Vec<T>`.  These are considered smart pointers as they both own some memory which can be manipulated.
+
+Typically, smart pointers are implemented with `structs` and will have `deref` and `drop` traits.  The `deref` trait allows for the smart pointer to be referenced while the `drop` traits behaves similarly to a C++ deconstructor.
+
+The most common standard library pointers are:
+* Box<T>: used for allocating  values on the heap
+* RC<T>: a reference counting type which allows for multiple owners
+* Ref<T> and RefMut<T>: accessed through RefCall<T>, a type that enforces borrowing rules at runtime rather than at compiletime.
+
+#### Using Box<T> to Point to Data on the Heap
+A box allows for the storage of data on the heap rather than on the stack.  The stack will still hold a pointer to the heap data.  Boxes do not have performance overhead although they are limited in their capabilities.  They are most often used in these situations:
+* When a type's size is unknown at compile time and you want to use a value of that type in a context that requires an exact size
+* When you there is a large amount of data that you want to transfer ownership of and want to ensure that the data will not be copied
+* When you want to own a value and only care about it being a type that implements a particular trait rather than being of a specific type
+
+##### Enabling Recursive Types with Boxes
+At compile time, Rust needs to know how much space a type takes up.  Once type whose size can't be known at compile time is a recursive type, where a value can have as part of itself, another value of the same type.  As this nesting could be infinite, Rust does not know how much space a value of a recursive type needs.  Boxes however, have a known size so by inserting a box in a recursive type definition, recursive types are resolved!
+
+###### More Information About the Cons List
+A _cons list_ is a data structure that comes from Lisp and its dialects.  In Lisp, the `cons` function constructs a new pair from its two arguments which are usually a single value and another pair.  A common idiom: "to cons x into y" informally means that a new container will be constructed with x at the head followed by the container y.
+
+###### Computing the Size of a Non-Recursive Type
+The greatest possible size of an object is used when allocating memory for it.  For example, in an `enum`, the largest variant will decide the total size of the `enum`.
+
+###### Using `Box<T>` to Get a Recursive Type with a Known Size
+Because a `Box<T>` is a pointer, Rust always knows how much space a `Box<T>` needs (a pointer's size does not depend on how much data it is pointing to!).  In this case, a recursive data type can store a pointer to another version of itself.
+
+#### Treating Smart Pointers Like Regular References with the `Deref` Trait
+Implementing the `deref` trait allows for users to customize the behavior of the dereference operator, `*`.  By Implementing `deref` in such a way that a smart pointer be treated like a regular reference, code can be written which operates on references and use that code with smart pointers as well.
+
+##### Treating a Type Like a Reference by Implementing the `Deref` Trait
+Begin by `use`ing `std::ops::Deref`.  Then, in the implementation for `Deref`, define an associated type for the `Deref` trait to use; this can be done using `type Target = T` where `T` is the generic parameter.  Associated types are a slightly different way of declaring a generic parameter and they will be covered in more detail later on.
+
+The actual `fn deref` should return the 0th index of `self` which looks like:
+```
+fn deref(&self) -> &T {
+	&self.0
+}
+```
+when we dereference the result of this `deref` function, Rust behind the scenes will convert `*y`, for example, into `*(y.deref())`.
+
+Also note that `deref` returns a reference to the `self.0` so that we are not moving ownership out of `self`.
+
+##### Implicit Deref Coercions with Functions and Methods
+_Deref Coercion_ is a convenience Rust performs on arguments to functions and methods.  Deref coercion will convert a reference to a type that implements `deref` into a reference to a type that `deref` can convert the original type into.  Deref coercion happens automatically when we pass a reference to a particular type's value as an argument to a function or method that doesn't match the parameter type in the function or method definition.  A sequence of calls to the `deref` method converts the type we provided into the type the parameter needs.  An example in action; consider the following function:
+```
+fn hello(name: &str) {
+    println!("Hello, {}!", name);
+}
+```
+This `hello` function will accept a string slice as an argument.  However, deref coercion allows us to call `hello` with a reference to a value of type `MyBox<String>`.
+
+##### How Deref Coercion Interacts with Mutability
+Similar to how the `deref` trait can be used to override the `*` operator on immutable references, the `DerefMut` trait can be used to override the `*` operator on mutable references.
+
+Rust will use deref coercion when it finds types and trait implementations in three cases:
+* From `&T` to `&U` when `T: Deref<Target=U>`
+* From `&mut T` to `&mut U` when `T: DerefMut<Target=U>`
+* From `&mut T` to `&U` when `T: Deref<Target=U>`
+
+The first two cases are the same except that the second one involves mutability.  The first case states that if you have `&T`, and `T` implements `deref` to some type `U`, you can get `&U` transparently.
+
+The third case is trickier.  Rust can coerce a mutable type into an immutable one!  **The reverse however is not possible!**
+
+#### Running Code on Cleanup with the `Drop` Trait
+`Drop` is another important trait for smart pointers.  `Drop` allows a user to specify the behavior for a type whenever a value of that type is about to go out of scope.
+
+It is also possible to invoke an early `drop` using `std::mem::drop` which is different from simply invoking `value.drop()`.  `sed::mem::drop` can be used as follows: `drop(value)`.  Note that if there is an attempt to drop a value before it is out of use, Rust will not actually follow through with the drop.
+
+#### `Rc<T>`, the Reference Counted Smart Pointer
+In the majority of cases, ownership is clear; this, however, is not always the case as there are times when a single value may want to have multiple owners.  In a graph data structure, for example, multiple edges might point to the same node and that node is conceptually owned by all of the edges that point to it.
+
+The `Rc<T>` type can be used to allocate some data on the heap for multiple parts of our program to read and we can't determine at compile time which part will finish data last.  If we knew which part would finish last, we could just make that part the data's owner, and the normal ownership rules enforced at compiler time would take effect.
+
+When using an `Rc<T>`, the `Rc::clone` is often used which is different from the typical `clone` in that `clone` makes a deep copy while `Rc::clone` increments the counter.  The reference counter of a smart pointer can be accessed with `Rc::strong_counter(&Rc)`.
+
+#### `RefCell<T>` and the Interior Mutability Pattern
+`Interior mutability` is a design pattern in Rust that allows one to mutate data even when there are immutable references to that data.  The `RefCell<T>` type follows this inner mutability pattern.
+
+##### Enforcing Borrowing Rules at Runtime with `RefCell<T>`
+Unlike `Rc<T>`, `RecCell<T>` represents single ownership over the data it holds.  What makes `RefCell<T>` from a type like `Box<T>`?  Recall the following borrowing rules:
+* At any given time, you can have _either_ (but not both of) one mutable reference or any number of immutable references
+* References must always be valid
+
+With references and `Box<T>`, the borrowing rules' invariants are enforced at compile time.  With `RefCell<T>`, these invariants are enforced at _runtime_.  This will manifest in the form of a `panic!` call which will exit a program.  The `RefCell<T>` type is useful when one can be sure that code will follow all borrowing rules however the compiler is unable to understand and guarantee that.
+
+##### Keeping Track of Borrows at Runtime with `RefCell<T>`
+When creating immutable and mutable references, the `&` and `&mut` syntax is used respectively.  With `RefCell<T>`, the `borrow` and `borrow_mut` are used instead.  Every time `borrow` is called a smart pointer of type `Ref<T>` is returned whereas `borrow_mut` returns `RefMut<T>`; both types implement `deref` and can be treated as regular references.
+
+The `RefCell<T>` keeps track of how many times `Ref<T>` and `RefMut<T>` smart pointers are currently active.  Every time `borrow` is called, the `RefCall<T>` increases its count of how many immutable borrows are active.  When a `Ref<T>` value goes out of scope, the count of immutable borrows goes down by one.
+
+##### Preventing Reference Cycles: Turning an `Rc<T>` into a `Weak<T>`
+A reference cycle can occur when one reference refers to another and that reference refers back to the original.  One way to prevent reference cycles is to use `Weak<T>` smart pointers.  A `weak` type smart pointer will increment/decrement the `weak_counter`.  A `weak_counter` is different from a `smart_counter` in that the `weak_count` does not have to be 0 for the `Rc<T>` instance to be cleaned up.  In order to ensure that a value has not been dropped, use the `upgrade` method of a `weak` type to return an `Option<T>` which will be `Some` if the `Rc<T>` value has not been dropped and `None` if the `Rc<T>` value has been dropped.
+
+One example in which a `weak` type can be used is when creating a tree data structure.  A parent should be aware of its children and vice-versa; when a parent is dropped, its parents should be as well, however the same is _not_ true the other way around.
+
+### Chapter 16
+_Concurrent programming_ is programming in which different parts of a program execute independently where _parallel programming_ is programming in which different parts of a program execute at the same time.  The Rust ownership system is used to manage memory safety and concurrency problems.
+
+#### Using Threads to Run Code Simultaneously
+In most current operating systems, an executed program's code is run in a process, and the operating system manages multiple processes at once.  Within a program, there can also be independent parts that run simultaneously.  The features that run these independent parts are called threads.
+
+There are two main ways in which programming languages implement threads.  Many operating systems provides API's for creating new threads.  This model in which a language depends on an OS for the creation of new threads is sometimes called _1:1_ meaning one operating system thread per one language thread.
+
+The second model involves programming languages providing their own special implementation of threads.  Programming language-provided threads are called _green_ threads and languages which use these green threads will execute them in the context of a different number of operating system threads.  For this reason, the green-threaded model is called the M:N model as there are `M` green threads per `N` operating system threads where `M` and `N` need not be the same number.
+
+Each model has its own advantages and trade-offs, and the trade-off most important to Rust is runtime support.  _Runtime_, in this context, refers to code that is included by the language in every binary.  Rust strives to have an extremely small runtime.  The green threading M:N model requires a larger language runtime to manage threads.  As such, the Rust standard library only provides an implementation of 1:1 threading.  There are, however, crates which provide M:N threading.
+
+##### Creating a New Thread with `spawn`
+To create a new thread, call the `thread::spawn` function and pass a closure containing the code to be run in the new thread.  A thread will be stopped when the outer context finishes (eg: a thread run in main will terminate when main ends)
+
+##### Waiting for All Threads to Finish Using `join` Handles
+In order to pause surrounding execution until a thread has finished executing, save the value of `thread::spawn` into a variable.  The return type for `thread::spawn` is a `JoinHandle`.  A `JoinHandle` is an owned value that, when we call the `join` method on it, will wait for its thread to finish.  Calling `join` on the handle blocks the thread currently running until the thread represented by the handle terminates.  _Blocking_ a thread means that the thread is prevented from performing work or exiting.
+
+##### Using `move` Closures with Threads
+The `move` closure is often used alongside `thread::spawn` because it allows the use of data between threads.  Rust will infer how to capture an 'environment' variable and as it is very difficult to tell when a thread will end it is hard to know when a reference will no longer be valid.
+
+#### Using Message Passing to Transfer Data Between Threads
+An increasingly popular approach to ensuring safe concurrency is _message passing_ in which threads or **actors** communicate by sending messages to each other which contain data.  *"Do not communicate by sharing memory; instead, share memory by communicating."* -GoLang Docs
+
+Rust standard library comes with a standard library implementation of channels called _channels_.  A channel in programming has two halves: a transmitter and a receiver.  The transmitter half is the upstream location and the receiver half is where the downstream location is.  A channel is said to be closed if either the transmitter or receiver half is dropped.
+
+Channels in Rust are created using the `mpsc::channel` function which returns a tuple.  `mpsc` stands for _multiple producer, single consumer_.  The tuple is typically written as `(tx, rx)` which stand for transmitter and receiver.  The transmitter end can be moved into the spawned thread and have it send one string to the main thread to communicate.
+
+The transmitting end has a `send` method that takes the value to be sent.  The `send` method returns a `Result<T, E>` type so that if the receiving end has already been dropped and there is nowhere to send the value, the send operation will return an error.
+
+The receiving end of a channel has two useful methods: `recv` and `try_recv`.  The `recv` call will block the caller's thread execution until a value is sent down the channel.  The `try_recv` method will not block but will instead `Result<T, E>` immediately: an `Ok` value holding a message if one is available and an `Err` value if there aren't any messages at the time.  `try_recv` is useful if the calling thread has work to do while waiting for messages.  A loop could be written that calls `try_recv` every so often, handles a message if one is available, and otherwise does other work for a while until checking again.
+
+##### Channels and Ownership Transference
+After sending a value down a channel, it cannot be used again as ownership has been transferred.
+
+##### Sending Multiple Values and Seeing the Receiver Waiting
+The `rx` part of the tuple received from `mpsc::channel` can be treated as an iterator to iterate over all messages received as they are received.  When the channel is closed, the iteration will terminate.
+
+##### Creating Multiple Producers by Cloning the Transmitter
+As stated before, `mpsc` stands for _multiple producer, single consumer_ meaning we can create multiple threads which all send values to the same receiving thread.  This requires cloning the transmitting half of the channel.
+
+#### Shared-State Concurrency
+Message passing is similar to single ownership in that once a value has been transferred down a channel, it can no longer be used in the original context.  Shared memory concurrency is like multiple ownership in that multiple threads can access the same memory location at the same time.
+
+##### Using Mutexes to Allow Access to Data from One Thread at a Time
+_Mutex_ is an abbreviation for _mutual exclusion_ meaning a mutex allows for only one thread to access some data at a particular time.  To access the data in a mutex, a thread must first signal that it wants to access by asking to acquire the mutex's _lock_.  The lock is a data structure that is part of the mutex that keeps track of who currently has exclusive access to the data.  The mutex serves to _guard_ the data it holds using the locking system.
+
+When using mutexes, one must remember two rules:
+* You must attempt to acquire the lock before using the data
+* When done with the data being guarded by the muetx, you must unlock the data so other threads can acquire the lock
+
+##### The API of `Mutex<T>`
+Mutex's can be found within the `std::sync::Mutex` library and a new mutex can be created using the `new` function.  To access the data inside of a mutex, the `lock` method is used to acquire the lock.  This call will block the current thread so that it cannot do any work until it's our turn to have the lock.  The call to `lock` would fail if another thread holding the lock panicked.  In that case, no one would ever be able to get the lock, so we've chosen to `unwrap` and have this thread panic if we're in that situation.  As a reminder, `unwrap` will implicitly return the inner element or `panic` - we check the `Option<T>` enum `Some(T)` or `None` enumerations.
+
+After a lock has been acquired, the return value can be treated as a mutable reference to the data inside.  Rust's type system ensures that a lock is acquired before the value inside is used.
+
+`Mutex<T>` is a smart pointer.  More accurately, the call to `lock` returns a smart pointer called `MutexGuard`.  This smart pointer implements `deref` to point at the inner data.  The smart point also has a `drop` implementation that releases the lock automatically when a `MutexGuard` goes out of scope; this prevents forgetting to release a `lock` after acquiring it.
+
+##### Sharing a `Mutex<T>` Between Multiple Threads
+Rust does not allow for multiple thread's to take ownership of the same value in the same context.  For example, a loop generating n > 1 threads cannot use `move` to take ownership of environment variables.
+
+##### Multiple Ownership with Multiple Threads
+One initial attempt to solve the 'sharing between `Mutex<T>`s problem could be to wrap the environment variable we want to use in an `Rc<T>` and cloning before transferring ownership into a new thread.  This however, does not quite work.  This is because `Rc<T>` is not safe to share across threads!
+
+`Rc<T>` manages reference counts by incrementing for each call to `clone` and decrementing each time a clone is dropped.  It does not however adhere to concurrent primitives to make sure changes to count can't be interrupted by another thread.
+
+##### Atomic Reference Counting with `Arc<T>`
+There is a type, `Arc<T>` which is like `Rc<T>` that is safe to use in concurrent situations.  The `A` here stands for atomic meaning it's an atomically reference counted type.  Atomic primitive types come with some overhead which is why all primitives are not atomic.  One nice thing about `Arc<T>` is that it has the same API as `Rc<T>` meaning there is no need to change and usage.
+
+#### Extensible Concurrency with `Sync` and `Send` Traits
+Rust the language has very few concurrency features.  Almost every concurrency feature covered so far is a part of the standard library and not the language itself.  There are, however, two concurrency concepts embedded in the language: `std::marker` traits `sync` and `send`.
+
+##### Allowing Transference of Ownership Between Threads with `Send`
+The `send` marker trait indicates that ownership of the type implementing `send` can be transferred between threads.  Almost every Rust type is `send` but there are some exceptions.  One exception we have covered is `Rc<T>` which cannot guarantee concurrent safety with `clone`.
+
+Any type which is composed entirely of `send` types is automatically marked as `send` as well.  Almost all primitive type are `send`, aside from raw pointers.
+
+##### Allowing Access from Multiple Threads with `sync`
+The `sync` marker trait indicates that it is safe for the type implementing `sync` to be referenced from multiple threads.  In other words, any type `T` is `sync` if `&T` is `send`.  Similar to `send`, primitive types are `sync`, and types composed entirely of `sync` are also `sync`.
+
+The smart pointer `Rc<T>` is also not `sync` for the same reasons that it is not `send`.  The `RefCell<T>` type and the family of related `Cell<T>` types are not `sync`.  The implementation of borrow checking that `RefCell<T>` does at runtime is not thread-safe.
+
+##### Implementing `send` and `sync` Manually is Unsafe
+As types that are entirely made up of `send` and `sync` traits are automatically also `send` and `sync`, these traits never have to be implemented manually.  As marker traits, they don't even have any methods to implement manually.
+
+### Chapter 17
+#### Characteristics of Object-Oriented Languages
+There is no consensus in the programming community about what features a language must have in order to be considered object-oriented.  Some commonly discussed characteristics are: objects, encapsulation and inheritance.
+
+##### Objects Contain Data and Behavior
+"Object-oriented" programs are made up of objects.  An _object_ packages both data and procedures that operate on that data.  The procedures are typically called _methods_ or _operations_."
+
+Using the above definition, Rust is object oriented.  Structs and enums have data, and `impl` blocks provide methods on structs and enums.  Even though structs and enums are not called objects, they provide the same functionality, according to the above definition, as objects.
+
+##### Encapsulation that Hides Implementation Details
+Another aspect commonly associated with OOP is the idea of _encapsulation_, which means that the implementation details of an object aren't accessible to code using that object.  Therefore, the only way to interact with an object is through its public API; code using the object shouldn't be able to reach into the object's internals and change data or behavior directly.
+
+Encapsulation in Rust is controlled using keywords like `pub` which decide which modules, types, functions and methods in a program should be public.  By default, all code is private.
+
+##### Inheritance as a Type System and as Code Sharing
+_Inheritance_ is a mechanism whereby an object can inherit from another object's definition, thus gaining the parent object's data and behavior without having to define them again.
+
+In Rust, there is no way to define a struct which inherits a parent struct's fields and method implementations.  There are, however, work arounds for implementing inheritance-like behavior in Rust.
+
+Inheritance is a desirable feature for two main reasons.  The first is that inheritance allows for more reuse of code.  Rust code can be shared using default trait method implementations instead.  Any type implementing a particular trait has access to that trait's methods.
+
+The second reason is polymorphism.  Polymorphism is often times thought of as being the same thing as inheritance; this is not the case.  Polymorphism is actually more general than inheritance and allows for code to work with data of multiple types.  For inheritance, these types are typically sub-classes.  Rust instead uses generics to abstract over different possible types and trait bounds to impose constraints on what those types must provide (similar to Java's interfaces?)
+
+Recently, inheritance has fallen out of favor as a programming design solution as it typically overshares and can define behavior for a parent class that is not actually applicable to a child class.  Rust takes a different approach, using trait objects instead of inheritance.
+
+#### Using Trait Objects that Allow for Values of Different Types
+An early problem of vectors in Rust was that they only allowed for the storage of elements of one type.  It is possible to create a workaround which uses `enums` to define a finite set of possible types within a vector.  The issue with this approach is that it requires the knowledge of all possible types at compiletime which may not be possible.
+
+##### Defining a Trait for Common Behavior
+A trait object points to both an instance of a type implementing our specified trait as well as a table used to look up trait methods on that type at runtime.  A trait object can be used in place of a generic or concrete type.  Wherever there is a trait object, Rust's type system will ensure at compile time that any value used in that context will implement the trait object's trait.
+
+In Rust, structs and enums are not referred to as objects..  In a struct or enum, the data in the struct field and the behavior in the `impl` blocks are separated.  A _trait object_ is more similar to an object in other languages as data and behavior are combined.  A trait object is different from an object in other languages as it is not possible to add data to a trait object.  Trait objects are not as helpful as objects in other languages as their specific purpose is to allow abstraction across common behavior.
+
+A trait can be defined as:
+```
+pub trait Draw {
+	fn draw(&self);
+}
+```
+A trait can then be used with a trait object as:
+```
+pub struct Screen {
+	pub components: Vec<Box<dyn, Draw>>,
+}
+```
+The above syntax defined a struct named `Screen` which holds a vector named `components`.  This vector is of type `Box<dyn Draw>` which is a trait object; it's a stand-in for any type inside a `Box` that implements the `Draw` trait.
+
+On the `Screen` struct, we define a method named `run` that will call the `draw` method on each of its `components`:
+```
+impl Screen {
+	pub fn run(&self) {
+		for component in self.components.iter() {
+			component.draw();
+		}
+	}
+}
+```
+The advantage of using trait objects and Rust's type system to write code similar to code using duck typing is that we never have to check whether a value implements a particular method at runtime or worry about getting errors if a value doesn't implement a method but we call it anyway.
+
+Recall that _static dispatch_ is when the compiler knows methods being called at compile time and can substitute for generics.  _Dynamic dispatch_, on the other hand, is when the compiler can't tell what method's being called at compile time and the compiler emits code that runs at runtime which will be used to figure out the call.
+
+When using trait objects, Rust **must** use dynamic dispatch.  The compiler doesn't know all the types that might be used with the code that is using trait objects, so it doesn't know which method implemented on which type to call.  Instead, at runtime, Rust uses the pointers inside the trait object to know which method to call.  **There is no runtime cost** when this lookup happens **that doesn't occur with static dispatch**.  Dynamic dispatch also prevents the compiler from choosing to inline a method's code, which in turn prevents some optimizations.  On the other hand, we did get extra flexibility in the code so it's a trade-off to consider.
+
+##### Object Safety is Required for Trait Objects
+You can only make _object-safe_ traits into trait objects.  Some complex rules govern all the properties that make a trait object safe, but in practice, only two rules really are relevant:
+* The return type **isn't** self
+* There are no generic type parameters
+
+The `self` keyword is an alias for the type we're implementing the traits or methods on.
