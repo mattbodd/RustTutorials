@@ -1,0 +1,1 @@
+/Users/mbodd/Desktop/RustProjects/RustTuts/trait_object_example/target/debug/trait_object_example.dSYM: /Users/mbodd/Desktop/RustProjects/RustTuts/trait_object_example/src/lib.rs /Users/mbodd/Desktop/RustProjects/RustTuts/trait_object_example/src/main.rs

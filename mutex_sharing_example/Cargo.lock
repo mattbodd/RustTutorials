@@ -1,0 +1,4 @@
+[[package]]
+name = "mutex_sharing_example"
+version = "0.1.0"
+
