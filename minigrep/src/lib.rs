@@ -16,19 +16,24 @@ pub struct Config {
 impl Config {
     // Remember that a ' denotes a lifetime specifier and that static is the longest
     // lifetime annotation in Rust - the duration of an entire program!
-    pub fn new(args: &[String]) -> Result<Config, &'static str> {
+    pub fn new(mut args: std::env::Args) -> Result<Config, &'static str> {
+        // Skip the 0th index containing calling context
+        args.next();
+
         // Returning an err here is more appropriate than invoking
         // panic! as this is a usage error rather than a programming
         // problem
-        if args.len() < 3 {
-            return Err("not enough arguments");
-        }
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a query string"),
+        };
 
-        // Cloning is not the most efficient way to obtain ownership
-        // although it is an easy solution for now...
-        let query = args[1].clone();
-        let filename = args[2].clone();
+        let filename = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a file name"),
+        };
 
+        
         let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
         Ok(Config { query, filename, case_sensitive })
@@ -63,15 +68,11 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 // We're essentially telling the compiler the lifetime of the returned vector is the
 // same as the lifetime of contents!  Query can be tossed after we finish searching
 fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let mut results = Vec::new();
+    // Take advantage of iterator adapter methods like filter!1
+    contents.lines()
+        .filter(|line| line.contains(query))
+        .collect()
 
-    for line in contents.lines() {
-        if line.contains(query) {
-            results.push(line);
-        }
-    }
-
-    results
 }
 
 fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {

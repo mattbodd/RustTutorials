@@ -11,13 +11,12 @@ use minigrep::Config;
 // lib.rs while the usage of functions defined in lib.rs go in main.rs
 
 fn main() {
-    // The collection function here converts the values returned by the iterator into a vector
-    let args: Vec<String> = env::args().collect();
-
     // Result<T, E>.upwrap_or_else() allows a user to define non-panic! error handling
     // if the inner value Result<T, E> is Ok() then it behaves like a normal Ok()
     // otherwise the code in the closure is run
-    let config = Config::new(&args).unwrap_or_else(|err| {
+    // we pass env::args() directly into Config::new as env::args() is
+    // an iterator which will allow Config::new to have ownership
+    let config = Config::new(env::args()).unwrap_or_else(|err| {
         eprintln!("Problem parsing arguments: {}", err);
         process::exit(1);
     });
