@@ -1,0 +1,4 @@
+[[package]]
+name = "raw_pointers_example"
+version = "0.1.0"
+

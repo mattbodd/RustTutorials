@@ -38,7 +38,7 @@ Rust also has two primitives for floating points as well.  Rust supports `f32` a
 The character primitive in Rust also supports more than just ASCII.  You can represent accented letters, Chinese, Japanese and Korean characters, emojis and zero-width spaces.
 
 ##### Compound Types
-*Compound Types* can group multiple values into one type.  Rust has two primative compount types: **tuples** and **arrays**.
+*Compound Types* can group multiple values into one type.  Rust has two primitive compound types: **tuples** and **arrays**.
 
 A tuple is a general way to group together values of various types into one compound type.  Tuples, like in other languages, are fixed in length at declaration.
 Tuples can be accessed with pattern matching:
@@ -198,7 +198,6 @@ Curly braces can be used to create a new scope, allowing for mutable references 
 Another feature of borrowing is that you cannot borrow as both mutable and immutable.
 
 Rust will also prevent dangling references at compile time by stopping users from returning a reference instead of transferring ownership.
-
 ##### The Slice Type
 String slices solve an issue in Rust where you may want to operate on a string but run the risk of losing having the original `String` value.  To get a string slide, use the `[0..4]` syntax.  For example:
 ```
@@ -344,7 +343,7 @@ fn plus_one(x : Option<i32>) -> Option<i32> {
 ```
 Matches, as in most functional programming languages, are exhaustive.  This means that every possible outcome must be handled by a match case.  This is especially obvious why trying to use `match` with an `Option<T>` in that we cannot neglect to check for `None` and/or `Some`.
 
-Also in parallel with other functional programming languages, a `match` can check for 'all other possible values' using a `_`.  One downside to the `match` statment is that it is a bit wordy when only one value needs to be included in the body of the `match`.  To solve this issue, Rust introduces the `if let` control flow.
+Also in parallel with other functional programming languages, a `match` can check for 'all other possible values' using a `_`.  One downside to the `match` statement is that it is a bit wordy when only one value needs to be included in the body of the `match`.  To solve this issue, Rust introduces the `if let` control flow.
 
 #### Concise Control Flow with `if let`
 The `if let` syntax lets you combine `if` and `let` into a less verbose way to handle values that match one pattern while ignoring the rest.  Consider the standard way to accomplish matching one value in a typical `match` statement:
@@ -365,7 +364,7 @@ While an `if let` is considerably less wordy, it also does not come with the exh
 
 ### Chapter 7 - Packages, Crates and Modules
 Rust has a number of features related to scopes.  This is sometimes called the "module system" but it covers more than just modules:
-* *Packages* are a Cargo feature taht let you build, test and share crates
+* *Packages* are a Cargo feature that let you build, test and share crates
 * *Crates* are a tree of modules that produce a library or executable
 * A *path* is a way of naming an item such as a struct, function or modules
 
@@ -373,11 +372,11 @@ Rust has a number of features related to scopes.  This is sometimes called the "
 A summary of packages and crates
 * A *crate* is a binary or library
 * The *crate root* is a source file that is used to now how to build a crate
-* A *package* has a *Cargo.toml* that describes how to build one or more crates.  At most one crate in a packate can be a library
+* A *package* has a *Cargo.toml* that describes how to build one or more crates.  At most one crate in a package can be a library
 
-When the command `cargo new ...` is issued, a *package* is being created.  Looking at the *Cargo.tomli* file, it is apparent that there is no mention of **src/main.rs**.  This is something Rust handles implicitly as Cargo's conventions are such that if there is an **src** directory containing **main.rs** in the same directory as the package's **Cargo.toml**, Cargo knoew that this package contains a binary crate with the same name as the package where **src/main.rs** is its *crate root*.  Another convention is that if the package directory contains **src/lib.rs**, the package contains a library crate with the same name as the package and **src/lib.rs** is its crate root.  The crate root files are passed by Cargo to `rustc` which actually builds the library or binary.
+When the command `cargo new ...` is issued, a *package* is being created.  Looking at the *Cargo.toml* file, it is apparent that there is no mention of **src/main.rs**.  This is something Rust handles implicitly as Cargo's conventions are such that if there is an **src** directory containing **main.rs** in the same directory as the package's **Cargo.toml**, Cargo knows that this package contains a binary crate with the same name as the package where **src/main.rs** is its *crate root*.  Another convention is that if the package directory contains **src/lib.rs**, the package contains a library crate with the same name as the package and **src/lib.rs** is its crate root.  The crate root files are passed by Cargo to `rustc` which actually builds the library or binary.
 
-A package contains zero or one library crates and as many binary crates as one would like.  There must always be at least one crate (binary or library) in a package.  A package can containg both **src/main.rs** and **src/lib.rs** in which case there are two crates (a library and a binary) which both have the same name.  A package can have multiple binary crates by placing files in the **src/bin** directory where each file will be a seperate binary crate.
+A package contains zero or one library crates and as many binary crates as one would like.  There must always be at least one crate (binary or library) in a package.  A package can containing both **src/main.rs** and **src/lib.rs** in which case there are two crates (a library and a binary) which both have the same name.  A package can have multiple binary crates by placing files in the **src/bin** directory where each file will be a separate binary crate.
 
 #### The Module System to Control Scope and Privacy
 Modules allow for the organization of code intro groups.  To define a module, use the keyword `mod` followed by the name of the module.  As mentioned previously, either of the files **src/main.rs** or **src/lib.rs** are referred to as *crate roots*; this naming convention comes from the fact that the contents of either of these two files form a module named *crate* at the root of the crate's module tree.
@@ -389,12 +388,12 @@ If we want to call a function, we must know it's *path*.  Path is very similar t
 
 Both absolute and relative paths are followed by the (`::`) syntax.
 
-##### Modules as the Privacy Boundry
-Modules can be used to better organize a program but they can also be used to create privacy boundries in Rust.  If an item like a function or struct should be private, simply put it into a module.  Here are Rust's privacy rules:
+##### Modules as the Privacy Boundary
+Modules can be used to better organize a program but they can also be used to create privacy boundaries in Rust.  If an item like a function or struct should be private, simply put it into a module.  Here are Rust's privacy rules:
 * All items (functions, methods, structs, enums, modules, and constants) are private by default
 * The `pub` keyword can be used to make an item public
 * Private code defined within a module that is not a child of the current module is off-limits
-* Any code defined in an acecstor module is available to use
+* Any code defined in an ancestor module is available to use
 
 Items that do not have the `pub` keyword are private as you look 'down' the module tree but items without the `pub` keyword are public as you look up the tree from the current module.
 
@@ -1951,3 +1950,536 @@ You can only make _object-safe_ traits into trait objects.  Some complex rules g
 The `self` keyword is an alias for the type we're implementing the traits or methods on.  Trait objects must be object safe because once they've been used, Rust no longer knows the concrete type that's implementing that trait.  If a trait method returns a concrete `self` type, but a trait object forgets the exact type that `self` is, there is no way the method can use the original concrete type.  The same is true for generic type parameters that are filled with concrete type parameters when the trait is used: the concrete types become part of the type that implements the trait.  When the type is forgotten through the use of a trait object, there is no way to know what types to fill in the generic type parameters with.
 
 #### Implementing an Object-Oriented Design Pattern
+The _state pattern_ is an object-oriented design pattern.  In a nutshell, the pattern is that a value has some internal state which is represented by a set of _state objects_.  The values behavior will depend on the internal state.
+
+Using the state pattern means that when the business requirements of the program change, we won't need to change the code of the value holding the state or the code that uses the value.  We only need to update code inside one of the state objects to change its rules or perhaps add more state objects.
+
+### Chapter 18
+Patterns in Rust allow for matching against the structure of types, both complex and simple.  Patterns can be used in conjunction with `match` expressions.  A pattern consists of some of the combination of the following:
+* Literals
+* Destructured arrays, enums, structs, or tuples
+* Variables
+* Wildcards
+* Placeholders
+
+These components describe the shape of the data we're working with, which we then match against values to determine whether our program has the correct data to continue running a particular piece of code.
+
+#### All the Places Patterns Can Be Used
+##### `match` Arms
+One place in which patterns are used is in the arms of `match` expressions.  Formally, `match` expressions are defined as the keyword `match`, a value to match on, and one or more match arms that consist of a pattern and an expression to run if the value matches that arm's pattern.  E.g.:
+```
+match VALUE {
+	PATTERN => EXPRESSION,
+	PATTERN => EXPRESSION,
+	PATTERN => EXPRESSION,
+}
+```
+One requirement for the `match` expressions is that they need to be exhaustive in the sense that all possibilities for the values in the `match` expression must be accounted for.  One way to ensure you've covered all possible patterns is to have a catchall pattern for the last arm.
+
+A particular pattern, `_` will match anything, but it never binds to a variable, so it's used often in the last match arm.  The `_` pattern can be useful when you want to ignore any value not specified.
+
+##### Conditional `if let` Expressions
+`if let` was previously discussed as a shorter way of writing the equivalent `match` that only matches a single case.
+
+##### `while let` Conditional Loops
+The `while let` conditional loop allows a `while` loop to run for as long as a pattern continues to match.
+
+##### `for` Loops
+As was mentioned before, the `for` loop is the most common loop construction in Rust code.  In a `for` loop, the pattern is the value that directly follows the keyword `for`, so in the `for x in y` the `x` is the pattern.
+
+##### `let` Statements
+`let` itself takes a pattern.  Consider `let PATTERN = EXPRESSION`.  In statements like `let x = 5;` with a variable name in the `PATTERN` slot, the variable name is just a particularly simple form of a pattern.  Rust compares the expression against the pattern and assigns any names it finds.  So in the `let x = 5;` example, `x` is a pattern that means "bind what matches here to the variable `x`."  Because the name `x` is the whole pattern, this pattern effectively means "bind everything to the variable `x`, whatever the value is."
+
+A more complex example using `let` is: `let (x, y, z) = (1, 2, 3);`
+
+##### Function Parameters
+Function parameters can also be patterns.  The parameter in a function declaration is actually specifying a pattern to take in.  This becomes more evident in examples like:
+```
+fn print_coordinates(&(x, y): &(i32, i32)) {
+	println!("Current location: ({}, {})", x, y);
+}
+
+fn main() {
+	let point = (3, 5);
+	print_coordinates(&point);
+}
+```
+
+#### Refutability: Whether a Pattern Might Fail to Match
+Patterns come in two forms: refutable and irrefutable.  Patterns that will match for any possible value passed are _irrefutable_.  An example would be `x` in the statement: `let x = 5;` because `x` matches anything and therefore cannot fail to match.  Patterns that can fail to match for some possible value are _refutable_.  An example would be `Some(x)` in the expression `if let Some(x) = a_value` because if the value in the `a_value` variables is `None` rather than `Some`, the `Some(x)` pattern will not match.
+
+Function parameters, `let` statements, and `for` loops can only accept irrefutable patterns, because the program cannot do anything meaningful when values don't match.  The `if let` and `while let` expressions only accept refutable patterns, because by definition they're intended to handle possible failure: the functionality of a conditional is in its ability to perform differently depending on success or failure.
+
+#### Pattern Syntax
+##### Matching Literals
+As was seen previously, it is possible to match patterns against literals directly:
+```
+let x = 1;
+
+match x {
+	1 => println!("one!"),
+	2 => println!("two!"),
+	3 => println!("three!"),
+	_ => println!("anything!"),
+}
+```
+
+##### Matching Named Variables
+Named variables are irrefutable patterns that match any value.  There is one complication when using a named variable inside of a `match` expression.  Because `match` starts a new scope, variables declared as part of this pattern inside the `match` expression will shadow those with the same name outside of the `match` construct as is the case with all variables.
+
+Take for example the following code:
+```
+fn main() {
+    let x = Some(5);
+    let y = 10;
+
+    match x {
+        Some(50) => println!("Got 50"),
+        Some(y) => println!("Matched, y = {:?}", y),
+        _ => println!("Default case, x = {:?}", x),
+    }
+
+    println!("at the end: x = {:?}, y = {:?}", x, y);
+}
+```
+If we walk through the different outcomes, we see that initially `Some(5) != Some(50)` but the second case will match as `Some(y)` is referring to a new `y` that is new to this match scope and the new `y` will match any value inside of a `Some` which is what we have in `x`.  Therefore, with the current setup of the code, the output from the match will be `Matched, y = 5`.
+
+If we changed the example to be:
+```
+fn main() {
+    let x = None;
+    let y = 10;
+
+    match x {
+        Some(50) => println!("Got 50"),
+        Some(y) => println!("Matched, y = {:?}", y),
+        _ => println!("Default case, x = {:?}", x),
+    }
+
+    println!("at the end: x = {:?}, y = {:?}", x, y);
+}
+
+```
+we are not considering a different case in which the first two arms of the`match` are not matched but the third is.  This will cause the `Match` to print: `Default case, x = None`.
+
+From this example, we can see how it is possible to overshadow values within a match to produce different behavior.
+
+##### Multiple Patterns
+In `match` expressions, it is possible to match multiple patterns using the `|` syntax which means _or_.
+
+##### Matching Ranges of Values with `...`
+The `...` syntax allows us to match an inclusive range of values.  Ranges are only allowed with numeric values or `char` values because the compiler needs to be able to check that the range isn't empty at compile time.  The only types for which Rust can tell if a range is empty or not are `char` and numeric values.
+
+##### Destructuring to Break Apart Values
+Patterns can also destructure structs, enums, tuples and references to use different parts of these values.
+
+###### Destructuring Structs
+A struct is constructed with fields.  These fields can be pulled out of the struct using a `let` statement which can either use names to refer to fields, or use the literal names for each field.
+
+###### Destructuring Enums
+When destructuring enums, make sure to destructure using the same pattern that the enum was defined with.
+
+###### Destructuring Nested Structs and Enums
+Similar to destructuring a singly nested enum, first match the outer enum and then the inner enum.
+
+###### Destructuring Structs and Tuples
+Complex types can be broken down into their component parts so that the values can be used separately.
+
+##### Ignoring Values in a Pattern
+It can be helpful to use `_` or `..` to ignore remaining parts of a value.
+
+###### Ignoring an Entire Value with `_`
+The `_` value can be used as a wildcard pattern that will match any value but not bind the value.  It is often used as the last arm in a `match` expression but can also be used in any pattern, including function parameters.
+
+###### Ignoring Parts of a Value with a Nested `_`
+The `_` can also be used inside of another pattern to ignore just part of the value.  For example, when it is desirable to test for only part of a value but have no use for the other parts in the corresponding code we want to run.
+
+###### Ignoring an Unused Variable by Starting its Name with `_`
+If a variable is created which is not used anywhere, Rust will warn that its name should be changed to include a `_` in front of it.  This is because you can tell Rust not to warn you about an unused variable by starting the name of the variable with an underscore.
+
+###### Ignoring Remaining Parts of a Value with `..`
+With values that have many parts, the `..` syntax can be used to ignore the majority of these parts.  The `..` pattern ignores any parts of a value that haven't been explicitly matched in the rest of the pattern.  For example:
+```
+struct Point {
+    x: i32,
+    y: i32,
+    z: i32,
+}
+
+let origin = Point { x: 0, y: 0, z: 0 };
+
+match origin {
+    Point { x, .. } => println!("x is {}", x),
+}
+```
+This is a faster way of ignoring `y` and `z` than having included `y` and `z` as: `y: _` or `z: _`.
+
+##### Extra Conditionals with Match Guards
+A _match guard_ is an additional `if` condition specified after the pattern in a `match` arm that must also match, along with the pattern matching, for that arm to be chosen.  Match guards are useful for expressing more complex ideas than a pattern alone allows.
+
+##### `@` Bindings
+The _at_ operator allows for the creation of a variable that holds a value at the same time that value is being tested to see if it matches a pattern.
+
+### Chapter 19
+#### Unsafe Rust
+The majority of common Rust code is written uses Rust's memory safety guarantees enforced at compile time.  Rust, however, has a 'secret second language' hidden inside it that doesn't enforce these memory safety guarantees called _unsafe Rust_. Unsafe Rust works just as regular Rust does, however it allows for some additional superpowers.
+
+Unsafe exists for the reason that, by nature, static analysis is conservative.  When a compiler tries to determine whether or not code upholds guarantees, it's better for it to reject some valid programs rather than accept some invalid programs.
+
+To begin using unsafe Rust, surround a new block with the keyword `unsafe`.  This enables four new actions in Rust called _unsafe superpowers_ which include:
+* Dereferencing raw pointers
+* Calling an unsafe function or method
+* Accessing or modifying a mutable static variable
+* Implementing an unsafe trait
+
+It's important to understand that unsafe Rust does not turn of the borrow checker or disable any other of Rust's safety checks.  If unsafe code is used, that unsafe is still checked.  The `unsafe` keyword only allows for access to these four features that are then not checked by the compiler for memory safety.
+
+To isolate unsafe code as much as possible, it is best to enclose unsafe code within a safe abstraction provided by a safe API.
+
+##### Dereferencing a Raw Pointer
+As with references, raw pointers can be immutable or mutable and are written as `*const T` and `*mut T` respectively.  Note that the **asterisk is no the dereference operator; it's part of the type name**.  In the context of raw pointers, _immutability_ means that the pointer can't be directly assigned to after being dereferenced.
+
+Different from references and smart pointers, raw pointers:
+* Are allowed to ignore the borrowing rules by having both immutable and mutable pointers or multiple pointers to the same location
+* Aren't guaranteed to point to valid memory
+* Are allowed to be null
+* Don't implement any automatic cleanup
+
+A raw pointer can be created in safe code, they just cannot be dereferenced outside an unsafe block.
+
+##### Calling an Unsafe Function or Method
+###### Creating a Safe Abstraction over Unsafe Code
+Just because a function contains unsafe code doesn't mean we need to mark the entire function as unsafe.  In fact, wrapping unsafe code in a safe function is a common abstraction.
+
+One example of an unsafe function that can be wrapped in a safe function is the standard `split_at_mut` function.  A naive implementation might look like:
+```
+fn my_split_at_mut(slice: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
+    let len = slice.len();
+
+    assert!(mid <= len);
+
+    (&mut slice[..mid],
+     &mut slice[mid..])
+}
+```
+When this code tries to compiler, an error is thrown as safe Rust cannot understand that while there are two borrows from the same slice twice, two distinct, non-overlapping parts of the string are being borrowed which is not going to cause an issue.  A better attempt is:
+```
+fn my_split_at_mut(slice: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
+    let len = slice.len();
+    let ptr = slice.as_mut_ptr();
+
+    assert(mid <= len);
+
+    unsafe {
+        (slice::from_raw_parts_mut(ptr, mid),
+         slice::from_raw_parts_mut(ptr.offset(mid as isize), len - mid)
+    }
+}
+```
+Recall that slices are a pointer to some data and the length of the string.  Here, the `as_mut_ptr` method is used to access the raw pointer of a slice.  As we started off with a mutable slice to `i32` values, `as_mut_ptr` returns a raw pointer with the type `*mut i32` which is stored in the variable `ptr`.
+
+The `slice::from_raw_parts_mut` is takes a raw pointer and a length, and creates a slice.  This function is used to create a slice that starts from m`ptr` and is `mid` items long.  Then `offset` is called on `ptr` with `mid` as an argument to get a raw pointer that starts at `mid` and a slice is created using that pointer and the remaining number of items after `mid` as the length.
+
+The `slice::from_raw_parts_mut` is unsafe because it takes a raw pointer and must trust that this pointer is valid.  The `offset` method on raw pointers is also unsafe because it must trust that the offset location is also a valid pointer.
+
+##### Using `extern` Functions to Call External Code
+Sometimes, Rust code might need to interact with code written in another language.  For this, the `extern` keyword should be used.  `extern` will facilitate the use of a _Foreign Function Interface (FFI)_.  Functions called with an `extern` block are always unsafe to call from Rust code as Rust cannot guarantee their safety.
+
+Within an `extern` block, the names and signatures of external functions from other languages are listed.  For example, to work with the `C` language standard library use:
+```
+extern "C" {
+	... C code ...
+}
+```
+The `"C"` part of `extern "C"` defines which _application binary interface (ABI)_ the external function uses.
+
+It is also possible to define functions which can be called from other languages.  To do this, rewrite a function header to look like:
+```
+#[no_mangle]
+<visibility> extern "<Target_Language>" fn <fn_name> {... Rust code ...}
+```
+The `#[no_mangle]` in this case will ensure that the Rust compiler does not 'mangle' the function name which is done by most compilers in most languages to make function names more useful for compilers.
+
+
+##### Accessing or Modifying a Mutable Static Variable
+Rust does support global variables although they can be problematic with Rust's ownership rules.  If two threads are accessing the same mutable global variable, for example, this could lead to a **data race**.
+
+In Rust, global variables are called _static_ variables.  Static variables are similar to constants.  The names of static variables should be in _screaming snake case_ and the variable's type must be annotated.  Static variables can only store references with `'static` lifetime which means the Rust compiler can figure out the lifetime and it does not need to be annotated explicitly.  Accessing an immutable static variable is safe.
+
+Constants and immutable static variables may seem similar but there is a subtle difference.  A static variable will **always** have a fixed address in memory; using the value will always access the same data.  Constants, on the other hand, are allowed to duplicate their data whenever they're used.
+
+Another difference between constants and static variables is that static variables can be mutable.  Accessing and modifying mutable static variables is _unsafe_.
+
+##### Implementing an Unsafe Trait
+The final action that works only with `unsafe` is implementing unsafe traits.  A trait is considered to be unsafe when at least one of its methods has some invariant that the compiler can't verify.  We can declare a trait as unsafe by adding the `unsafe` keyword before `trait` and marking the implementation of the trait as `unsafe` too.
+
+#### Advanced Lifetimes
+So far, lifetime annotations have been discussed in the context of providing explicit lifetimes to denote how long a reference should be valid.  Most of the time, however, Rust allows us to elide these explicit lifetime annotations.  There are three advanced features of lifetimes left to cover:
+* Lifetime subtyping: ensures that one lifetime outlives another lifetime
+* Lifetime bounds: specifies a lifetime for a reference to a generic type
+* Inference of trait object lifetimes: allows the compiler to infer trait object lifetimes and when they need to be specified
+
+##### Ensuring One Lifetime Outlives Another with Lifetime Subtyping
+_Lifetime Subtyping_ specifies that one lifetime should outlive another lifetime.  Lifetime subtyping can be done by first declaring a single lifetime and then declaring another lifetime which lives at least as long as this first one.  For example:
+```
+struct Parser<'c, 's: 'c> {
+	context: &'c Context<'s>,
+}
+```
+Here, we ensure that the lifetime of `'s` lasts at least as long as the lifetime of `'c`.
+
+##### Lifetime Bounds on References to Generic Types
+Lifetime parameters can be added as constraints on generic types which are called _lifetime bounds_.  Lifetime bounds help Rust to verify that references in generic types won't outlive the data they're referencing.  For example, consider the definition of the `Ref` struct:
+```
+struct Ref<'a, T>(&'a T);
+```
+Here, the issue is that `T` can be any type, `T` could be a reference or a type that holds one or more references, each of which have their own lifetimes.  Rust cannot be sure that`T` will live as long as `'a`.
+
+##### Inference of Trait Object Lifetimes
+What should happen if the type implementing the trait in the trait object has a lifetime of its own.  Rust comes with some rules for working with lifetimes and trait objects:
+* The default lifetime of a trait object is `'static`
+* With `&'a Trait` or `&'a mut Trait`, the default lifetime of the trait object is `'a`
+* With a single `T: 'a` clause, the default lifetime of the trait object is `'a`
+* With multiple clauses like `T: 'a`, there is no default lifetime; we must be explicit
+
+In order to be explicit when there are multiple clauses, a lifetime bound on an object can be added with syntax similar to: `Box<dyn Red + 'a>`
+
+#### Advanced Traits
+##### Specifying Placeholder Types in Trait Definitions with Associated Types
+_Associated types_ connect a type placeholder with a trait such that the trait method definitions can use these placeholder types in their signatures.  The implementor trait will specify the concrete type to be used in this type's place for the particular implementation.  In this way, a trait can be defined that uses some types without needing to know exactly what those types are until the trait is implemented.  An example of an associated type in action:
+```
+pub trait Iterator {
+	type Item;
+	
+	fn next(&mut self) -> Option<Self::Item>;
+}
+```
+The type `Item` is a placeholder type and the `next` method's definition shows that it will return values of type `Option<Self::Item>`.  Implementors of the `Iterator` trait will specify the concrete type for `Item`, and the `next` method will return an `Option` containing a value of that concrete type.
+
+Associated types may similar to generics however they are different concepts.  The difference is that when using generics, the types in each implementation must be implemented as generics allow for uses like: `Iterator<String> for Counter` and `Iterator<u32> for Counter`.  When a trait has a generic parameter, it can be implemented for a type multiple times, changing the concrete types of the generic type parameters each time.
+
+With associated types, it is not necessary to annotate types because it is not possible to implement a trait on a type multiple times.  In the example above, the type of `Item` can only be chosen _once_!  For this reason, it is not necessary to specify that the iterator is for values of `u32` whenever `next` is used.
+
+##### Default Generic Type Parameters and Operator Overloading
+When using generic type parameters, default concrete types can be specified for the generic type.  This eliminates the need for implementors of the trait to specify a concrete type if the default type works.  The syntax for specifying a default type for a generic type is: `<PlaceholderType=ConcreteType>` when declaring the generic type.
+
+An example where this comes in handy is when using _operator overloading_.  Operator overloading is customizing behavior of an operator (such as `+`) in particular situations.
+
+Rust does not allow for the creation of new operators or overloading of arbitrary operators but it is possible to overload operations and corresponding traits listed in `std::ops` by implementing the traits associated with the operator.  For example, to overload the `+` operator to add two `Point` instances together.
+
+##### Fully Qualified Syntax for Disambiguation: Calling Methods with the Same Name
+Nothing in Rust prevents a trait from having a method with the same name as another trait's method, nor does Rust prevent implementing both traits on one type.  It is also possible to implement a method directly on the type with the same name as methods from traits.
+
+When calling methods with the same name, it is important to Rust to specify which one to use.  Consider the case where we define two traits that both implement the same method.
+
+Specifying the trait name before the method name clarifies to Rust which implementation of a method is being called.  This only works when the method being called takes in a reference to `self` as a parameter.  Associated functions, however, that are not part of traits do not have a `self` parameter.  When two types in the same scope implement that trait, Rust can't figure out which type is being referred to unless _fully qualified syntax_ is being used.
+
+Fully qualified syntax will provide Rust with a type annotation within angle brackets which indicates how to treat a type as a trait in this context.  In general, the full syntax for fully qualified syntax is:
+```
+<Type as Trait>::function(receiver_if_method, next_arg, ...);
+```
+For associated functions, there would be no need for a `receiver`: there would only be a need for a list of other arguments.
+
+##### Using Supertraits to Require One Trait's Functionality Within Another Trait
+Sometimes, it is desirable to have one trait use another trait's functionality.  In this case, one must rely on the dependent trait being implemented.  This trait, being relied on, is called a _supertrait_ of the trait being implemented.  To specify supertrait dependence, define a trait in the following way:
+```
+trait <name>: <path_to_supertrait::supertrait> { ... }
+```
+
+##### Using the Newtype Pattern to Implement External Traits on External Types
+When discussing implementing traits on a type, it was mentioned that we are only allowed to implement traits on a type as long as either the trait or type are local to our crate.  It is possible to get around this restriction using the _newtype pattern_ which involves creating a new type in a tuple struct.  The tuple struct will have one field and be a thin wrapper around the type that we want to implement a trait for.  Then, the wrapper type is local to our crate and we can implement the trait on the wrapper.
+
+For example, we normally are stopped from implementing the `Display` trait on `Vec<T>` which normally is prevented as `Display` and `Vec<T>` are defined outside of our crate.
+
+The example implementation in **newtype_example** uses `self.0` to access the inner `Vec<T>`, because `Wrapper` is a tuple struct and `Vec<T>` is the item at index 0 in the tuple.
+
+The downside of using this technique is that the `Wrapper` is a new type so it does not have the methods of the value it's holding.  It would be necessary to implement all of the methods of `Vec<T>` directly on `Wrapper` such that the methods delegate to `self.0` in **newtype_example**.
+
+#### Advanced Types
+##### Using the Newtype Pattern for Type Safety and Abstraction
+The newtype pattern can be used for things such as enforcing that values are never confused and indicating the units of a value.  Another use of the newtype pattern is in abstracting away some implementing details of a type: the new type can expose a public API that is different from the API of the private inner type if the new type was used directly to restrict the available functionality, for example.
+
+Newtypes can also hide internal implementation.  For example, we could provide a `People` type to wrap a `HashMap<i32, String>` that stores a person's ID associated with their name.  Code using `People` would only interact with the public API we provide, such as a method to add a name string to the `People` collection; that code wouldn't need to know that we assign an `i32` ID to names internally.  The newtype pattern is a lightweight way to achieve encapsulation to hide implementation details.
+
+##### Creating Type Synonyms with Type Aliases
+Along with the newtype pattern, Rust provides the ability to declare a _type alias_ to give an existing type another name.  For this, the `type` keyword is used.  For example, we can create the alias `Kilometers` to `i32` like so:
+```
+type Kilometers = i32
+```
+Now, the alias `Kilometers` is a _synonym_ for `i32`; unlike `Millimeters` and `Meters` used in a previous example, `Kilometers` is not a separate, new type.  Values that have the type `Kilometers` will be treated the same as values of type `i32`.  As `Kilometers` and `i32` are the same type, they can both be added and `Kilometers` can be passed in place of `i32` parameters.  Using a type alias allows for more manageable code in place of long type annotations.
+
+##### The Never Type that Never Returns
+Rust has a special type named `!` that is known as an _empty type_ as it has no values.  In Rust, it is referred to as the _never type_ because it stands in place of the return type when a function will never return.  One use of never types occurs in pattern matching with `match` arms.  Consider the following:
+```
+let guess = match guess.trim().parse() {
+	Ok(_) => 5,
+	Err(_) => continue,
+}
+```
+Remember that `match` arms are required to all be of the same type.  As in the `Ok()` case a `u32` is returned, the `Err()` case must also return a type `u32`.  `continue` is an example of a function that returns `!`.  Knowing `continue` returns a never type allows for the `guess` function to return a `u32` type.
+
+To more formally discuss the behavior of the `!` type, `!` can be coerced into any other type.
+
+##### Dynamically Sized Types and the `Sized` Trait
+A dynamically sized type is a type whose size can only be determined at runtime.  One common example of a dynamically sized type in Rust is `str`.  Rust needs to know how much memory to allocate for any value of a particular type and all values of a type must use the same amount of memory.  For this reason, if Rust allowed for:
+```
+let s1: str = "Hello there!";
+let s2: str = "How's it going?";
+```
+both `s1` and `s2` could be of type `str` while `s1` holds 12 bytes and `s2` 15.  To get around this issue, we instead of `str` use `&str`.
+
+Recall that the slice data structure stores the starting position and the length of the slice.  With this data structure, we know the size at compile time (a `str` is twice the size of a `usize`).  The 'golden rule' of dynamically sized types is that we must put them behind some kind of pointer.
+
+Every trait is a dynamically sized type that can be referred to using the name of the trait.  To work with dynamically sized traits, Rust has a particular trait called the `Sized` trait to determine whether or not a type's size is known at compile time.  This trait is automatically implemented for everything whose size is known at compile time.  The trait is automatically implemented for everything whose size is known at compile time.  In addition, Rust implicitly adds a bound on `Sized` to every generic function.  That is, a generic function definition which looks like:
+```
+fn generic<T>(t: T) { ... }
+```
+is actually treated as though it had been written like:
+```
+fn generic<T: Sized>(t: T) { ... }
+```
+By default, generic functions will only work on types with a known size at compile time.  However, this restriction can be relaxed by defining generic functions like:
+```
+fn generic<T: ?Sized>(t: &T) { ... }
+```
+A trait bound on `?Sized` is the opposite of a trait bound on `Sized`: we would read this as "`T` may or may not be `Sized`."  This syntax is only available for `Sized` and not for any other trait.
+
+Also note in the above example that the type of parameter `t` was switched from `T` to `&T`.  Because the type might not be `Sized`, we need to use it behind some kind of pointer.  In this case, we use a reference.
+
+#### Advanced Functions and Closures
+##### Function Pointers
+So far, passing closures to functions has been covered but it is also possible to pass regular functions to functions.  This technique is useful when it helps to pass a function that has already been defined rather than define a new closure.  Functions coerce to the type `fn` (with a lowercase `f` as `Fn` is separate).  The `fn` type is called a _function pointer_.  The syntax for specifying a parameter which is a function is similar to that of a closure:
+```
+fn first_func(x: i32) -> i32 {
+	x + 1
+}
+
+fn second_func(f: fn(i32) -> i32, arg: i32) -> i32 {
+	f(arg) + f(arg)
+}
+```
+Unlike closures, `fn` is a type rather than a trait, so `fn` is specified as the parameter type directly rather than declaring a generic type parameter with one of the `Fn` traits as a trait bound.
+
+Function pointers implement all three of the closure traits(`Fn`, `FnMut` and `FnOnce`) so it is always possible to pass a function pointer as an argument for a function that expects a closure.  It's best to write functions using a generic type and one of the closure traits so the function can accept either functions or closures.
+
+##### Returning Closures
+Closures are represented by traits which means they can't be returned directly.  In most cases where a trait is trying to be returned, a concrete type that implements the trait can be returned instead.  This cannot be done with closures as they don't have a concrete type that is returnable.
+
+#### Macros
+Macros refers to a family of features in Rust:
+* _Declarative_ macros with `macro_rules!`
+* _Procedural_ macros, which come in three kinds
+  * Custom `#[derive]` macros
+  * Attribute-like macros
+  * Function-like macros
+
+##### The Difference Between Macros and Functions
+Fundamentally, macros are a way of writing code that writes other code.  This is known as `metaprogramming`.  The `derive` attribute generates and implementation of various traits.  The `println!` and `vec!` macros are also used frequently.  All of these macros _expand_ to produce more code than the code that has been written manually.
+
+Metaprogramming is useful for reducing the amount of code that is written and maintained, which is also one of the roles of functions.  However, macros have some additional power that functions do not have.
+
+A function signature must declare the number and type of parameters the function has.  Macros, on the other hand, can take a variable number of parameters: we can call `println!("hello")` with one argument or `println!("hello {}", name)` with two arguments. Also, macros are expanded before the compiler interprets the meaning of the code, so a macro can, for example, implement a trait on a given type.  A function can't, because it gets called at runtime and a trait needs to be implemented at compile time.
+
+The downside to implementing a macro instead of a function is that macro definitions are more complex than function definitions because one must write Rust code which can write Rust code.
+
+One last important difference between macros and functions is that macros must be brought into scope _before_ they can be called in a file, whereas functions can be defined anywhere and they can be called anywhere.
+
+##### Declarative Macros with `macros_rules!` for General Metaprogramming
+The most widely used form of macros in Rust are _declarative macros_.  These are also sometimes referred to as "macros by example", "`macro_rules!` macros" or just plain "macros".  At their core, declarative macros are written in a form similar to Rust `match `expressions.  As previously discussed, `match` expressions are controls structures that take an expression, compare the resulting value of an expression to patterns, and then run the code associated with the matching pattern.  Macros also compare a value to patterns that have code associated with them; in this situation, the value is the literal Rust source code passed to the macro, the patterns are compared with the structure of that source code, and the code associated with each pattern is the code that replaces the code passed to the macro.  This happens all during compilation.
+
+To define a macro, use the `macro_rules!` construct.  Take a look at a simplified implementation of the `vec!` macro:
+```
+#[macro_export]
+macro_rules! vec {
+    ( $( $x:expr ),* ) => {
+        {
+            let mut temp_vec = Vec::new();
+            $(
+                temp_vec.push($x);
+            )*
+            temp_vec
+        }
+    };
+}
+```
+To start, the `#[macro_export]` annotation indicates that this macro should be made available whenever the create in which the macros is defined is brought into scope.  Without this annotation, the macro can't be brought into scope.
+
+The macro definition is started with `macro_rules!` and the name of the macro (defined without `!`).  The `{ }` denote the body of the macro definition.
+
+The structure in the `vec!` body is similar to the structure of the `match` expression.  Here, there is one arm with the pattern `( $( $x:expr ),* )` followed by `=>` and the block of code associated with the pattern.  Anything not matched by a pattern arm will yield an error.
+
+The pattern syntax used for macros is different from the pattern syntax used in other parts of Rust.  First, a set of parentheses encompass the entire pattern.  Then comes a `$` followed by a set of parentheses which captures values that match the pattern within the parentheses to use in the replacement code.  Within `$()` is `$x:expr` which matches any Rust expression and gives the expression the name `$x`.  The comma following `$()` indicates that a literal comma separator character could optionally appear after the code that matches the code captured in `$()`.  The `*` following the comma specifies that the pattern matches 0 or more of whatever precedes the `*`.
+
+Examining the code within the pattern arm, `temp_vec.push()` within the `*()` is generated for each part that matches `$()` in the pattern 0 or more times.  The `$x` is replaced with each expression matched.
+
+##### Procedural Macros for Generating Code from Attributes
+The second form of macros is called _procedural macros_ because they are more like functions (which are a type of procedure).  Procedural macros accept some Rust code as an input, operate on that code, and produce some Rust code as an output rather than matching against patterns and replacing the code with other code as declarative macros do.
+
+There are three kinds of procedural macros but they all work in a similar fashion.  First, the definitions must reside in their own crate with a special crate type.  This is for complex technical reasons that will hopefully not stick around for long.
+
+Second, using any of these kinds of macros takes on a form where `some_attribute` is a placeholder for using a specific macro.
+
+##### How to Write a Custom `derive` Macro
+For this exercise, refer to the following crates: **/hello_macro**, **/hello_macro/hello_macro_derive** and **/use_hello_macro**.  The crate, **/hello_macro** will define a trait named `HelloMacro` with an associated function named `hello_macro`.  Rather than have crate users implement the `HelloMacro` trait for each other their, we will provide a procedural macro so users can annotate their types with `#[derive(HelloMacro)]` to get a default implementation of the `hello_macro` function.
+
+Notice that both **/hello_macro** and **/hello_macro/hello_macro_define** are library crates.  Within the **/hello_macro** crate, we define the `HelloMacro` trait with its associated function: `hello_macro`.  At this point, a user could implement the trait however they like.  This is not desirable, however, as a user would have to write an implementation block for each type they wanted to use with `hello_macro`.  Ultimately, `hello_macro` should print: `"Hello, Macro! My name is #name"` where `#name` is the type name of the type the trait is implemented on.  Rust does not have reflection capabilities, so it cannot look up the name at runtime.
+
+The next step is to define a procedural macro.  At the time this is being written, procedural macros require their own crates.  The naming convention for defining procedural macros is `foo_derive` for a crate named `foo`.  The **hello_macro_derive** crate needs to be specified as a procedural macro crate which can be done in **hello_macro_derive/Cargo.toml**:
+```
+[lib]
+proc-macro = true
+```
+After this, it is time to define the procedural macro which is done inside of **/hello_macro_derive/src/lib.rs**.
+
+Panicking on errors is necessary in procedural macro code because `proc_macro_derive` functions _must_ return `TokenStream` intead of `Result`.  This is why in `hello_macro_derive/src/lib.rs`, `.unwrap()` is used.
+
+##### Attribute-like Macros
+Attribute-like macros are similar to custom derived macros, but instead of generating code for the `derive` attribute, they allow for the creation of new attributes.  `Attribute-like` macros are also more flexible, `derive` only works for structs and enums; attributes can go on other items as well, like functions.
+
+As an example of using an attribute-like macro, for an attribute named `route` that annotates functions when using a web application framework:
+```
+#[route(GET, "/")]
+fn index() { ... }
+```
+This `#[route]` attribute would be defined by the framework itself as a procedural macro.  The macro definition function's signature would look something like:
+```
+#[proc_macro_attribute]
+pub fn route(attr: TokenStream, item: TokenStream) -> TokenStream { ... }
+```
+In the above definition, there are two `TokenStream` type parameters.  The first is for the contents of the attribute (the `Get, "/"`).  The second is the body of the item the attribute is attached to: `fn index { ... }` in this case.
+
+Aside from these initial steps, attribute-macros work the same was as custom derived macros.
+
+##### Function-like macros
+Function-like macros define macros that look like function calls.  The syntax for defining a function-like macro is similar to that of a custom derived macro: we get in the tokens that are inside the parentheses after the `!` and return the code we want to generate.
+
+### Project 3
+#### Building a Single-Threaded Web Server
+There are two main protocols involved in web servers: _Hypertext Transfer Protocol (HTTP)_ and _Transmission Control Protocol (TCP)_.  Both protocols are _request-response_ protocols meaning a client initiations requests and a server listens and provides response to the client.  The content of the messages passed between client and server are defined by the protocols.
+
+TCP is the lower-level protocol that describes the details of how information gets from one server to another but doesn't specify what that information is.  HTTP builds on top of TCP by defining the contents of the requests and responses.  HTTP typically sends its data over TCP.  Here, we will work with raw bytes of TCP and HTTP requests and responses.
+
+##### Listening to the TCP Connection
+To begin listening for TCP connections, use the Rust crate: `TcpListener`.  Using `TcpListener`, call the `bind` method to listen on **localhost:7878**.  The `bind` function returns a `Result<T, E>`.  The `incoming` method on `TcpListener` returns an iterator that gives a sequence of streams of type `TcpStream` where a single stream represents an open connection between client and server.  A _connection_ is the name for the full request and response process in which a client connects to the server and the server generates a response and then the server terminates the connection.
+
+When running a bare bones `TcpListener::bind("...")` you may see that multiple streams are connected to.  This could happen as a result of multiple resources getting loaded for the same page (potentially including _favicon.ico_).  Another reason multiple streams are detected could be that the browser is trying to connect to the server multiple times because the server is not responding with any data.  When elements of `TcpListener::bind("...").incoming()` go out of scope, `drop` will close the connection.
+
+##### Reading the Request
+Create a new function, `handle_connection`, which serves to read and write to individual streams.  Notice that the parameter of `handle_connection`, `stream`, is mutable.  This is because `stream` maintains an internal record of what it has returned and may read data after it has been initially checked.  The potential internal state changes call for a mutable access.
+
+The next thing `handle_connection` does is create a buffer which is 512 bytes large.  This is done in: `let mut buffer = [0; 512];`.  After this buffer has been filled by the stream, it is converted to a string using `String::from_utf8_lossy` which takes a `&[u8]` and produces a string from it.
+
+##### Writing a Response
+An HTTP response has the following format:
+```
+HTTP-Version Status-Code Reason-Phrase CRLF
+headers CRLF
+message-body
+```
+The first line is a _status line_ that contains the HTTP version used in the response, a numeric status code that summarizes the result of the request, and a reason phrase that provides a text description of the status code.
+
+#### Turning Our Single-Threaded Server into a Multithreaded Server
+Initially, our server could only handle one connection at a time meaning until the first connection finished, a second one could not be processed.
+
+##### Improving Throughput with a Thread Pool
+A _thread pool_ is a group of spawned threads that are waiting and ready to handle a task.  When the program receives a new task, it assigns on of the threads in the pool to the task, and that thread will process the task.  The remaining threads in the pool are available to handle any other tasks that come in while the first thread is processing.  When the first thread is done processing its task, it's returned to the pool of idle threads, ready to handle a new task.  A thread pool allows you to process connections concurrently, increasing the throughput of the server.

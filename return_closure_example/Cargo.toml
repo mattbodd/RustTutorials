@@ -1,0 +1,7 @@
+[package]
+name = "return_closure_example"
+version = "0.1.0"
+authors = ["Matt <mboddewy@u.rochester.edu>"]
+edition = "2018"
+
+[dependencies]
