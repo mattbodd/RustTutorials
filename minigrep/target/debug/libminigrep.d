@@ -1,1 +1,1 @@
-/Users/mbodd/Desktop/RustProjects/RustTuts/minigrep/target/debug/libminigrep.rlib: /Users/mbodd/Desktop/RustProjects/RustTuts/minigrep/src/lib.rs
+/Users/mbodd/Desktop/RustProjects/RustTuts/minigrep/target/debug/libminigrep.rmeta: /Users/mbodd/Desktop/RustProjects/RustTuts/minigrep/src/lib.rs /Users/mbodd/Desktop/RustProjects/RustTuts/minigrep/src/main.rs
